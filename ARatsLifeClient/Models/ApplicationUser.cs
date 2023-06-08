@@ -10,16 +10,16 @@ namespace ARatsLifeClient.Models
 {
   public class ApplicationUser : IdentityUser
   {
-    public static void Register(RegisterViewModel model)
+    public async static Task RegisterAsync(RegisterViewModel model)
     {
-      string jsonApplicationUser = JsonConvert.SerializeObject(model);
-      ApiHelper.Register(jsonApplicationUser);
+      // var jsonApplicationUser = JsonConvert.SerializeObject(model);
+      await ApiHelper.RegisterAsync(model);
     }
 
     public static Task<string> Login(LoginViewModel model)
     {
       var userInfo = new string[] { model.Email, model.Password};
-      string jsonUserInfo = JsonConvert.SerializeObject(userInfo);
+      var jsonUserInfo = JsonConvert.SerializeObject(userInfo);
       var result = ApiHelper.Login(jsonUserInfo);
       return result;
     }
