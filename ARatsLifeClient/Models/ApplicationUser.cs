@@ -4,21 +4,23 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
+using ARatsLifeClient.ViewModels;
 
 namespace ARatsLifeClient.Models
 {
   public class ApplicationUser : IdentityUser
   {
-    public static void Post(ApplicationUser applicationUser)
+    public async static Task RegisterAsync(RegisterViewModel model)
     {
-      string jsonApplicationUser = JsonConvert.SerializeObject(applicationUser);
-      ApiHelper.Post(jsonApplicationUser);
+      // var jsonApplicationUser = JsonConvert.SerializeObject(model);
+      await ApiHelper.RegisterAsync(model);
     }
 
-    public static Task<string> Login(ApplicationUser applicationUser)
+    public static Task<string> Login(LoginViewModel model)
     {
-      string jsonApplicationUser = JsonConvert.SerializeObject(applicationUser);
-      var result = ApiHelper.Login(jsonApplicationUser);
+      var userInfo = new string[] { model.Email, model.Password};
+      var jsonUserInfo = JsonConvert.SerializeObject(userInfo);
+      var result = ApiHelper.Login(jsonUserInfo);
       return result;
     }
   }

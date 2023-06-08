@@ -2,11 +2,18 @@
   ViewData["Title"] = "Accounts";
 }
 
+@using System.IdentityModel.Tokens.Jwt;
+@using System.Security.Claims;
+
 <h1>Accounts Page</h1>
 
-@if (User.Identity.IsAuthenticated)
+@if (Context.Request.Cookies["jwtCookie"] != null)
 {
-  <p>Hello @User.Identity.Name!</p>
+  <p>Hello</p>
+}
+else
+{
+  <p>Your ass is grass seabass.</p>
 }
 
 <p>@Html.ActionLink("Register", "Register")</p>

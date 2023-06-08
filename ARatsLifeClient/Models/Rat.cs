@@ -16,12 +16,23 @@ public class Rat
 
   public static List<Rat> GetRats()
   {
-    var apiCallTask = ApiHelper.GetAll();
+    var apiCallTask = ApiHelper.GetAllRats();
     var result = apiCallTask.Result;
 
     JArray jsonResponse = JsonConvert.DeserializeObject<JArray>(result);
     List<Rat> ratList = JsonConvert.DeserializeObject<List<Rat>>(jsonResponse.ToString());
 
     return ratList; 
+  }
+
+  public static Rat GetDetails(int id)
+  {
+    var apiCallTask = ApiHelper.GetRat(id);
+    var result = apiCallTask.Result;
+
+    JObject jsonResponse = JsonConvert.DeserializeObject<JObject>(result);
+    Rat thisRat = JsonConvert.DeserializeObject<Rat>(jsonResponse.ToString());
+
+    return thisRat;
   }
 }

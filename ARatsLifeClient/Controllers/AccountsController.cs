@@ -3,64 +3,106 @@ using Microsoft.AspNetCore.Identity;
 using ARatsLifeClient.Models;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-// using ARatsLifeClient.ViewModels;
+using ARatsLifeClient.ViewModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ARatsLifeClient.Controllers;
 
-  public class AccountsController : Controller
+public class AccountsController : Controller
+{
+  // private readonly ARatsLifeClientContext _db;
+  // private readonly UserManager<ApplicationUser> _userManager;
+  // private readonly SignInManager<ApplicationUser> _signInManager;
+
+  // public AccountController (UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ARatsLifeClientContext db)
+  // {
+  //   _userManager = userManager;
+  //   _signInManager = signInManager;
+  //   _db = db;
+  // }
+
+  // this HAS to be static because every time to you a RedirectToAction, you get a new Controller
+  // :Facepalm
+  private static string ErrorMessage = "";
+
+  public ActionResult Index()
   {
-    // private readonly ARatsLifeClientContext _db;
-    // private readonly UserManager<ApplicationUser> _userManager;
-    // private readonly SignInManager<ApplicationUser> _signInManager;
+    
+    return View();
+  }
 
-    // public AccountController (UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ARatsLifeClientContext db)
-    // {
-    //   _userManager = userManager;
-    //   _signInManager = signInManager;
-    //   _db = db;
-    // }
-
-    public ActionResult Index()
+  public ActionResult Register()
+  {
+    if (!string.IsNullOrEmpty(ErrorMessage))
     {
-      return View();
+      ViewBag.Hummus = ErrorMessage;
     }
+    return View();
+  }
 
-    public ActionResult Register()
+  [HttpPost]
+  public async Task<ActionResult> Register(RegisterViewModel model)
+  {
+    try
     {
-      return View();
-    }
-
-    [HttpPost]
-    public ActionResult Register(ApplicationUser applicationUser)
-    {
-      ApplicationUser.Post(applicationUser);
+      await ApplicationUser.RegisterAsync(model);
       return RedirectToAction("Index");
     }
-
-    public ActionResult Login()
+    catch (KylesCustomException e)
     {
-      return View();
+      // we threw this exception ourselves in ApiHelper.cs -- it is a handled case
+      // we planned for it cus we're advanced programmers
+      Console.WriteLine(e.Message);
+      ErrorMessage = e.Message;
+      return RedirectToAction("Register");
     }
-
-
-    [HttpPost]
-    public ActionResult Login(ApplicationUser applicationUser)
+    catch(Exception e)
     {
-      if(!ModelState.IsValid)
+      // catch all for every exception that we did not plan for
+      // dont know what happened here. something fucked up. maybe a NullReferenceException
+      // catch it here so the whole application does not crash.
+      Console.WriteLine(e.Message);
+      return RedirectToAction("Index");
+    }
+  }
+
+  public ActionResult Login()
+  {
+    return View();
+  }
+
+  [HttpPost]
+  public ActionResult Login(LoginViewModel model)
+  {
+    try
+    {
+      if (!ModelState.IsValid)
       {
-        return View(applicationUser);
+        return View(model);
       }
       else
       {
-      var result = ApplicationUser.Login(applicationUser);
-
-      // if (result.Succeeded)
-      // {
-
-      // }
-      return RedirectToAction("Index");
+        ApplicationUser.Login(model);
+        return RedirectToAction("Index");
       }
     }
+    catch (Exception e)
+    {
+      Console.WriteLine(e.Message);
+      return RedirectToAction("Index");
+    }
+  }
   //   [HttpPost]
   //   public async Task<ActionResult> Login(LoginViewModel model)
   //   {
