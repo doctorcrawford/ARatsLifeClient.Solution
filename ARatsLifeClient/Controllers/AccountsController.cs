@@ -32,22 +32,49 @@ public class AccountsController : Controller
   //   _db = db;
   // }
 
+  // this HAS to be static because every time to you a RedirectToAction, you get a new Controller
+  // :Facepalm
+  private static string ErrorMessage = "";
+
   public ActionResult Index()
   {
-
+    
     return View();
   }
 
   public ActionResult Register()
   {
+    if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+      ViewBag.Hummus = ErrorMessage;
+    }
     return View();
   }
 
   [HttpPost]
-  public ActionResult Register(RegisterViewModel model)
+  public async Task<ActionResult> Register(RegisterViewModel model)
   {
-    ApplicationUser.Register(model);
-    return RedirectToAction("Index");
+    try
+    {
+      await ApplicationUser.RegisterAsync(model);
+      return RedirectToAction("Index");
+    }
+    catch (KylesCustomException e)
+    {
+      // we threw this exception ourselves in ApiHelper.cs -- it is a handled case
+      // we planned for it cus we're advanced programmers
+      Console.WriteLine(e.Message);
+      ErrorMessage = e.Message;
+      return RedirectToAction("Register");
+    }
+    catch(Exception e)
+    {
+      // catch all for every exception that we did not plan for
+      // dont know what happened here. something fucked up. maybe a NullReferenceException
+      // catch it here so the whole application does not crash.
+      Console.WriteLine(e.Message);
+      return RedirectToAction("Index");
+    }
   }
 
   public ActionResult Login()
@@ -58,13 +85,21 @@ public class AccountsController : Controller
   [HttpPost]
   public ActionResult Login(LoginViewModel model)
   {
-    if (!ModelState.IsValid)
+    try
     {
-      return View(model);
+      if (!ModelState.IsValid)
+      {
+        return View(model);
+      }
+      else
+      {
+        ApplicationUser.Login(model);
+        return RedirectToAction("Index");
+      }
     }
-    else
+    catch (Exception e)
     {
-      ApplicationUser.Login(model);
+      Console.WriteLine(e.Message);
       return RedirectToAction("Index");
     }
   }
