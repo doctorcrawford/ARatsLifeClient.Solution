@@ -46,7 +46,7 @@ public class AccountsController : Controller
   {
     if (!string.IsNullOrEmpty(ErrorMessage))
     {
-      ViewBag.Hummus = ErrorMessage;
+      ViewBag.ErrorMessage = ErrorMessage;
     }
     return View();
   }
@@ -56,7 +56,7 @@ public class AccountsController : Controller
   {
     try
     {
-      await ApplicationUser.RegisterAsync(model);
+      var tokenGrab = await ApplicationUser.RegisterAsync(model);
       return RedirectToAction("Index");
     }
     catch (KylesCustomException e)
@@ -82,27 +82,32 @@ public class AccountsController : Controller
     return View();
   }
 
-  [HttpPost]
-  public ActionResult Login(LoginViewModel model)
-  {
-    try
-    {
-      if (!ModelState.IsValid)
-      {
-        return View(model);
-      }
-      else
-      {
-        ApplicationUser.Login(model);
-        return RedirectToAction("Index");
-      }
-    }
-    catch (Exception e)
-    {
-      Console.WriteLine(e.Message);
-      return RedirectToAction("Index");
-    }
-  }
+  // [HttpPost]
+  // public ActionResult Login(LoginViewModel model)
+  // {
+  //   try
+  //   {
+  //     if (!ModelState.IsValid)
+  //     {
+  //       return View(model);
+  //     }
+  //     else
+  //     {
+  //       ApplicationUser.Login(model);
+  //       return RedirectToAction("Index");
+  //     }
+  //   }
+  //   catch (Exception e)
+  //   {
+  //     Console.WriteLine(e.Message);
+  //     return RedirectToAction("Index");
+  //   }
+  // }
+
+
+
+
+  
   //   [HttpPost]
   //   public async Task<ActionResult> Login(LoginViewModel model)
   //   {

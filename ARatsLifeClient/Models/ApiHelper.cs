@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using RestSharp;
 using ARatsLifeClient.ViewModels;
+using System.Text.Json;
 
 namespace ARatsLifeClient.Models
 {
@@ -18,23 +19,25 @@ namespace ARatsLifeClient.Models
 
     public static async Task<string> GetRat(int id)
     {
-      RestClient client = new RestClient(HOSTNAME);
-      RestRequest request = new RestRequest($"api/rats/{id}", Method.Get);
-      RestResponse response = await client.GetAsync(request);
+      var client = new RestClient(HOSTNAME);
+      var request = new RestRequest($"api/rats/{id}", Method.Get);
+      var response = await client.GetAsync(request);
       return response.Content;
     }
     //--------------------------- 
     // for application users
 
-    public static async Task RegisterAsync(RegisterViewModel newApplicationUser)
+    public static async Task<DTOGoodAccount> RegisterAsync(RegisterViewModel newApplicationUser)
     {
       using var httpClient = new HttpClient();
       var path = HOSTNAME + "api/accounts";
       var resp = await httpClient.PostAsJsonAsync<RegisterViewModel>(path, newApplicationUser);
 
       if (resp.IsSuccessStatusCode) {
-        // return resp.Content
-        return;
+        // var parsedJson = await JsonSerializer.DeserializeAsync<DTOGoodAccount>(resp.Content.ReadAsStream());
+        var parsedJson = await resp.Content.ReadFromJsonAsync<DTOGoodAccount>(new JsonSerializerOptions(), CancellationToken.None);
+        // var parsedJson2 = await resp.Content.ReadAsStringAsync(); //This works
+        return parsedJson;
       }
 
       var returnedMsg = await resp.Content.ReadAsStringAsync();
