@@ -2,6 +2,11 @@ using System.Threading.Tasks;
 using RestSharp;
 using ARatsLifeClient.ViewModels;
 using System.Text.Json;
+using System.Net;
+using Microsoft.AspNetCore.Mvc;
+using System.Web;
+
+
 
 namespace ARatsLifeClient.Models
 {
@@ -35,7 +40,14 @@ namespace ARatsLifeClient.Models
 
       if (resp.IsSuccessStatusCode) {
         // var parsedJson = await JsonSerializer.DeserializeAsync<DTOGoodAccount>(resp.Content.ReadAsStream());
+
         var parsedJson = await resp.Content.ReadFromJsonAsync<DTOGoodAccount>(new JsonSerializerOptions(), CancellationToken.None);
+
+        var cookie = new Cookie("Token", parsedJson.Token);
+        // var cookieContainer = new CookieContainer();
+        // cookieContainer.Add( new Uri($"http://localhost:5102"), cookie);
+        // var httpClient = new
+        
         // var parsedJson2 = await resp.Content.ReadAsStringAsync(); //This works
         return parsedJson;
       }

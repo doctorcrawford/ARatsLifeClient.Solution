@@ -16,6 +16,8 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
+using System.Net;
 
 namespace ARatsLifeClient.Controllers;
 
@@ -57,6 +59,11 @@ public class AccountsController : Controller
     try
     {
       var tokenGrab = await ApplicationUser.RegisterAsync(model);
+      // var cookieOptions = new CookieOptions();
+      // cookieOptions.Expires = DateTime.Now.AddMinutes(5);
+      // cookieOptions.Path = "/";
+      // Response.Cookies.Append("TokeCookie", "SomeValue", cookieOptions);
+      // var cookie = Response.Cookies
       return RedirectToAction("Index");
     }
     catch (KylesCustomException e)
