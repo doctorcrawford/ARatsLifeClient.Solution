@@ -7,7 +7,7 @@ public class RatsController : Controller
 {
   public IActionResult Index()
   {
-    List<Rat> rats = Rat.GetRats();
+    List<Rat> rats = Rat.GetRatsAsync();
     return View(rats);
   }
 }

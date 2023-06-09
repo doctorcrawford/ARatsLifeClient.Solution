@@ -14,7 +14,7 @@ public class Rat
   public int Heat { get; set; }
   public int IndentoryId { get; set; }
 
-  public static List<Rat> GetRats()
+  public static List<Rat> GetRatsAsync()
   {
     var apiCallTask = ApiHelper.GetAllRats();
     var result = apiCallTask.Result;
